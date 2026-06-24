@@ -1,0 +1,22 @@
+{
+  "name": "Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "containerEnv": {
+    "TERM": "xterm-256color"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:1": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/duduribeiro/devcontainer-features/neovim:1": {
+      "version": "stable"
+    },
+    "ghcr.io/duduribeiro/devcontainer-features/tmux:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainer-community/devcontainer-features/astral.sh-uv:1": {
+      "shellautocompletion": true
+    },
+    "ghcr.io/jsburckhardt/devcontainer-features/fzf:1": {},
+    "ghcr.io/devcontainer-community/devcontainer-features/tree-sitter:1": {}
+  }
+}
