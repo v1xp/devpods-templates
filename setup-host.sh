@@ -56,8 +56,8 @@ if [ ! -f "$KEYS_DIR/env.sh" ]; then
 # export AWS_REGION=us-east-1
 #
 # Git identity (used by dotfiles install)
-# export GIT_USER_EMAIL="you@example.com"
-# export GIT_USER_NAME="Your Name"
+export GIT_USER_EMAIL="you@example.com"
+export GIT_USER_NAME="Your Name"
 ENVEOF
 fi
 
