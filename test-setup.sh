@@ -66,6 +66,8 @@ fi
 # 2. Run checks inside pod
 echo ""
 echo "--- Running checks inside pod ---"
+echo "Waiting for setup to complete..."
+sleep 5
 CHECKS=$(devpod ssh "$WORKSPACE" -- bash -s << 'CHECKSCRIPT'
 # Docker
 if [ -S /var/run/docker.sock ]; then
