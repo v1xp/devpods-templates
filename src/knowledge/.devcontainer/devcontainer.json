@@ -8,7 +8,8 @@
   "mounts": [
     "source=${localEnv:HOME}/.devpod-keys,target=/tmp/devpod-keys,readonly,type=bind,consistency=cached",
     "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh-host,type=bind,consistency=cached,readonly",
-    "source=${localEnv:HOME}/.devpod-dotfiles,target=/tmp/dotfiles,readonly,type=bind,consistency=cached"
+    "source=${localEnv:HOME}/.devpod-dotfiles,target=/tmp/dotfiles,readonly,type=bind,consistency=cached",
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
   ],
   "postStartCommand": "bash .devcontainer/setup.sh",
   "remoteUser": "vscode"
