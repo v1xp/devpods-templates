@@ -47,6 +47,10 @@ if [ ! -f "$KEYS_DIR/env.sh" ]; then
 # Add your secrets here, e.g.:
 # export API_KEY=your_key_here
 # export AWS_REGION=us-east-1
+#
+# Git identity (used by dotfiles install)
+# export GIT_USER_EMAIL="you@example.com"
+# export GIT_USER_NAME="Your Name"
 ENVEOF
 fi
 

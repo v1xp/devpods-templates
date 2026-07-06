@@ -25,3 +25,23 @@ fi
 if [ -f /tmp/dotfiles/install.sh ]; then
   bash /tmp/dotfiles/install.sh
 fi
+
+# 5. Quick verification
+echo ""
+echo "=== Setup Verification ==="
+if [ -d ~/.gnupg/private-keys-v1.d ]; then
+  echo "✓ GPG keys imported"
+else
+  echo "✗ GPG keys not found"
+fi
+if git config --global commit.gpgsign 2>/dev/null | grep -q true; then
+  echo "✓ Git signing enabled"
+else
+  echo "✗ Git signing not enabled"
+fi
+if [ -f ~/.devpod-env.sh ]; then
+  echo "✓ Env loaded"
+else
+  echo "✗ Env not loaded"
+fi
+echo "==="
