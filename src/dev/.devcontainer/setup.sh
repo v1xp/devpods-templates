@@ -29,17 +29,7 @@ if [ -f ~/.devpod-env.sh ] && ! grep -q 'devpod-env' ~/.bashrc 2>/dev/null; then
   echo '[ -f ~/.devpod-env.sh ] && source ~/.devpod-env.sh' >> ~/.bashrc
 fi
 
-# 5. Dotfiles — clone from GitHub
-DOTFILES_REPO="https://github.com/v1xp-org/dotfiles-devpods.git"
-DOTFILES_DIR="~/.local/share/dotfiles"
-if [ ! -d "$DOTFILES_DIR" ]; then
-  git clone --depth 1 "$DOTFILES_REPO" "$DOTFILES_DIR" 2>/dev/null || true
-fi
-if [ -f "$DOTFILES_DIR/install.sh" ]; then
-  bash "$DOTFILES_DIR/install.sh"
-fi
-
-# 6. Quick verification
+# 5. Quick verification
 echo ""
 echo "=== Setup Verification ==="
 if [ -d ~/.gnupg/private-keys-v1.d ]; then
