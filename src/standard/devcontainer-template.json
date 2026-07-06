@@ -1,0 +1,6 @@
+{
+  "id": "standard",
+  "version": "0.1.0",
+  "name": "standard",
+  "description": "Standard devpod with GPG signing, SSH, and env secrets"
+}

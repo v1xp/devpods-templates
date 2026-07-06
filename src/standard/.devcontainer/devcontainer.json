@@ -1,0 +1,22 @@
+{
+  "name": "devpod",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "containerEnv": {
+    "GPG_TTY": "/dev/pts/0",
+    "TERM": "xterm-256color"
+  },
+  "mounts": [
+    "source=${localEnv:HOME}/.devpod-keys,target=/tmp/devpod-keys,readonly,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh-host,type=bind,consistency=cached,readonly"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:1": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainer-community/devcontainer-features/astral.sh-uv:1": {
+      "shellautocompletion": true
+    },
+    "ghcr.io/jsburckhardt/devcontainer-features/fzf:1": {}
+  },
+  "postStartCommand": "bash .devcontainer/setup.sh",
+  "remoteUser": "vscode"
+}
