@@ -28,8 +28,9 @@ else
   echo "Using key: $FINGERPRINT"
 fi
 
-# Create directory
+# Create directories
 mkdir -p "$KEYS_DIR/gpg"
+mkdir -p "$KEYS_DIR/ssh"
 
 # Export public key
 echo "Exporting public key..."
@@ -38,6 +39,12 @@ gpg --export "$FINGERPRINT" > "$KEYS_DIR/gpg/pubring.gpg"
 # Export subkeys only (no master)
 echo "Exporting signing subkey..."
 gpg --export-secret-subkeys "$FINGERPRINT" > "$KEYS_DIR/gpg/subkeys.gpg"
+
+# Copy SSH keys
+if [ -d "$HOME/.ssh" ]; then
+  echo "Copying SSH keys..."
+  cp "$HOME/.ssh/id_*" "$KEYS_DIR/ssh/" 2>/dev/null || true
+fi
 
 # Create env.sh template
 if [ ! -f "$KEYS_DIR/env.sh" ]; then
@@ -56,7 +63,7 @@ fi
 
 # Lock down permissions
 chmod 700 "$KEYS_DIR"
-chmod 600 "$KEYS_DIR/gpg/"* "$KEYS_DIR/env.sh"
+chmod 600 "$KEYS_DIR/gpg/"* "$KEYS_DIR/ssh/"* "$KEYS_DIR/env.sh" 2>/dev/null || true
 
 echo ""
 echo "Done! Directory structure:"
@@ -64,4 +71,4 @@ find "$KEYS_DIR" -type f
 echo ""
 echo "Next steps:"
 echo "  1. Edit $KEYS_DIR/env.sh to add your secrets"
-echo "  2. Use the 'standard' template when creating devpods"
+echo "  2. Use the templates when creating devpods"
