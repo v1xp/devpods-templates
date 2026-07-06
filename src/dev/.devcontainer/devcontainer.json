@@ -8,6 +8,6 @@
   "mounts": [
     "source=${localEnv:HOME}/.devpod-keys,target=/tmp/devpod-keys,readonly,type=bind,consistency=cached"
   ],
-  "postStartCommand": "bash .devcontainer/setup.sh",
+  "postStartCommand": "bash src/dev/.devcontainer/setup.sh",
   "remoteUser": "vscode"
 }

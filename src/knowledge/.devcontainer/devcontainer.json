@@ -9,6 +9,6 @@
     "source=${localEnv:HOME}/.devpod-keys,target=/tmp/devpod-keys,readonly,type=bind,consistency=cached",
     "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
   ],
-  "postStartCommand": "bash .devcontainer/setup.sh",
+  "postStartCommand": "bash src/knowledge/.devcontainer/setup.sh",
   "remoteUser": "vscode"
 }
