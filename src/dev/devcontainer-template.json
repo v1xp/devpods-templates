@@ -1,0 +1,6 @@
+{
+  "id": "dev",
+  "version": "0.1.0",
+  "name": "dev",
+  "description": "Development pod with GPG signing, SSH, env secrets, and dotfiles"
+}

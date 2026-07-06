@@ -1,0 +1,15 @@
+{
+  "name": "knowledge-pod",
+  "image": "ghcr.io/v1xp-org/knowledge-pod:latest",
+  "containerEnv": {
+    "GPG_TTY": "/dev/pts/0",
+    "TERM": "xterm-256color"
+  },
+  "mounts": [
+    "source=${localEnv:HOME}/.devpod-keys,target=/tmp/devpod-keys,readonly,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh-host,type=bind,consistency=cached,readonly",
+    "source=${localEnv:HOME}/.devpod-dotfiles,target=/tmp/dotfiles,readonly,type=bind,consistency=cached"
+  ],
+  "postStartCommand": "bash .devcontainer/setup.sh",
+  "remoteUser": "vscode"
+}

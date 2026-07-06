@@ -1,0 +1,6 @@
+{
+  "id": "knowledge",
+  "version": "0.1.0",
+  "name": "knowledge",
+  "description": "Knowledge pod with GPG signing, SSH, env secrets, dotfiles, and research tools"
+}
