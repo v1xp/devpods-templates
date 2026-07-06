@@ -28,3 +28,14 @@ fi
 if [ -f ~/.devpod-env.sh ] && ! grep -q 'devpod-env' ~/.bashrc 2>/dev/null; then
   echo '[ -f ~/.devpod-env.sh ] && source ~/.devpod-env.sh' >> ~/.bashrc
 fi
+
+# 5. Git config from env vars
+if [ -f /tmp/devpod-keys/env.sh ]; then
+  source /tmp/devpod-keys/env.sh
+  if [ -n "${GIT_USER_EMAIL:-}" ]; then
+    git config --global user.email "$GIT_USER_EMAIL"
+  fi
+  if [ -n "${GIT_USER_NAME:-}" ]; then
+    git config --global user.name "$GIT_USER_NAME"
+  fi
+fi
