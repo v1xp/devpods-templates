@@ -1,11 +1,29 @@
 #!/usr/bin/env bash
 # Test script to verify devpod setup
-# Run from host: ./test-setup.sh [template-path]
+# Run from host: ./test-setup.sh [knowledge|dev]
 # Spins up pod, tests it, closes it, reports results.
 set -uo pipefail
 
-TEMPLATE="${1:-.}"
-WORKSPACE="devpod-test-$(date +%s)"
+TEMPLATE="${1:-knowledge}"
+REPO_URL="https://github.com/v1xp/devpods-templates"
+
+# Map template name to devcontainer path
+case "$TEMPLATE" in
+  knowledge|k)
+    DEVCONTAINER_PATH="src/knowledge/.devcontainer/devcontainer.json"
+    TEMPLATE_NAME="knowledge"
+    ;;
+  dev|d)
+    DEVCONTAINER_PATH="src/dev/.devcontainer/devcontainer.json"
+    TEMPLATE_NAME="dev"
+    ;;
+  *)
+    echo "Usage: $0 [knowledge|dev]"
+    exit 1
+    ;;
+esac
+
+WORKSPACE="devpod-test-${TEMPLATE_NAME}-$(date +%s)"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -22,13 +40,13 @@ warn() { echo -e "${YELLOW}!${NC} $1"; }
 ERRORS=0
 
 echo "=== DevPod Setup Test ==="
-echo "Template: $TEMPLATE"
+echo "Template: $TEMPLATE_NAME"
 echo "Workspace: $WORKSPACE"
 echo ""
 
 # 1. Spin up pod
 echo "--- Spinning up pod ---"
-UP_OUTPUT=$(devpod up "$TEMPLATE" --dotfiles github.com/v1xp-org/dotfiles-devpods.git 2>&1)
+UP_OUTPUT=$(devpod up "$REPO_URL" --devcontainer-path "$DEVCONTAINER_PATH" --dotfiles github.com/v1xp-org/dotfiles-devpods.git 2>&1)
 if [ $? -eq 0 ]; then
   pass "Pod created"
   # Extract workspace name from output
