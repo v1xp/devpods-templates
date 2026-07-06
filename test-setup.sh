@@ -85,7 +85,7 @@ else
   echo "FAIL:GPG home directory missing or no private keys imported"
 fi
 
-SUBKEY=$(gpg --list-secret-subkeys --keyid-format long 2>/dev/null | grep "ssb" | head -1 | awk '{print $2}')
+SUBKEY=$(gpg --list-secret-keys --keyid-format long 2>/dev/null | grep -E "^(sec|ssb)" | tail -1 | awk '{print $2}' | cut -d'/' -f2 || true)
 if [ -n "$SUBKEY" ]; then
   echo "PASS:Signing subkey found: $SUBKEY"
 else

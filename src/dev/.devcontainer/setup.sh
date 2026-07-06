@@ -43,19 +43,16 @@ fi
 # 6. Git signing config (after GPG import)
 git config --global commit.gpgsign true
 
-# Wait for GPG agent to be ready
+# Wait for GPG agent to be ready and detect signing key
+SIGNING_KEY=""
 for i in 1 2 3 4 5; do
-  SIGNING_KEY=$(gpg --list-secret-subkeys --keyid-format long 2>/dev/null | grep "^\s*ssb" | head -1 | awk '{print $2}' | cut -d'/' -f2 || true)
+  # Try subkey first (ssb), then primary key (sec)
+  SIGNING_KEY=$(gpg --list-secret-keys --keyid-format long 2>/dev/null | grep -E "^(sec|ssb)" | tail -1 | awk '{print $2}' | cut -d'/' -f2 || true)
   if [ -n "$SIGNING_KEY" ]; then
     break
   fi
   sleep 1
 done
-
-# Fallback to primary key
-if [ -z "$SIGNING_KEY" ]; then
-  SIGNING_KEY=$(gpg --list-secret-keys --keyid-format long 2>/dev/null | grep "^sec" | head -1 | awk '{print $2}' | cut -d'/' -f2 || true)
-fi
 
 if [ -n "$SIGNING_KEY" ]; then
   git config --global user.signingkey "$SIGNING_KEY"
