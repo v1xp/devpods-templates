@@ -178,13 +178,19 @@ while IFS= read -r line; do
   esac
 done <<< "$CHECKS"
 
-# 3. Delete pod
+# 3. Delete pod (skip if there were errors for debugging)
 echo ""
 echo "--- Cleaning up ---"
-if devpod delete "$WORKSPACE" --force 2>&1; then
-  pass "Pod deleted"
+if [ "$ERRORS" -gt 0 ]; then
+  warn "Errors found - keeping pod for debugging"
+  echo "Run: devpod ssh $WORKSPACE -- cat /tmp/setup-debug.log"
+  echo "Run: devpod delete $WORKSPACE --force"
 else
-  warn "Pod deletion failed (manual cleanup may be needed)"
+  if devpod delete "$WORKSPACE" --force 2>&1; then
+    pass "Pod deleted"
+  else
+    warn "Pod deletion failed (manual cleanup may be needed)"
+  fi
 fi
 
 # 4. Summary

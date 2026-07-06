@@ -46,13 +46,16 @@ git config --global commit.gpgsign true
 # Wait for GPG agent to be ready and detect signing key
 SIGNING_KEY=""
 for i in 1 2 3 4 5 6 7 8 9 10; do
-  SIGNING_KEY=$(gpg --list-secret-keys --keyid-format long 2>/dev/null | grep -E "^(sec|ssb)" | tail -1 | awk '{print $2}' | cut -d'/' -f2) || true
+  GPG_OUTPUT=$(gpg --list-secret-keys --keyid-format long 2>&1) || true
+  echo "[setup.sh] GPG attempt $i output: $GPG_OUTPUT" >> /tmp/setup-debug.log
+  SIGNING_KEY=$(echo "$GPG_OUTPUT" | grep -E "^(sec|ssb)" | tail -1 | awk '{print $2}' | cut -d'/' -f2) || true
   if [ -n "$SIGNING_KEY" ]; then
     break
   fi
   sleep 2
 done
 
+echo "[setup.sh] Final SIGNING_KEY: $SIGNING_KEY" >> /tmp/setup-debug.log
 if [ -n "$SIGNING_KEY" ]; then
   git config --global user.signingkey "$SIGNING_KEY"
 fi
