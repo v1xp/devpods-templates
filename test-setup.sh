@@ -5,7 +5,7 @@
 set -uo pipefail
 
 TEMPLATE="${1:-.}"
-WORKSPACE="devpod-test-$$"
+WORKSPACE="devpod-test-$(date +%s)"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -20,7 +20,6 @@ fail() {
 warn() { echo -e "${YELLOW}!${NC} $1"; }
 
 ERRORS=0
-OUTPUT=""
 
 echo "=== DevPod Setup Test ==="
 echo "Template: $TEMPLATE"
@@ -29,9 +28,18 @@ echo ""
 
 # 1. Spin up pod
 echo "--- Spinning up pod ---"
-if devpod up "$TEMPLATE" --id "$WORKSPACE" --dotfiles github.com/v1xp-org/dotfiles-devpods.git 2>&1; then
+UP_OUTPUT=$(devpod up "$TEMPLATE" --dotfiles github.com/v1xp-org/dotfiles-devpods.git 2>&1)
+if [ $? -eq 0 ]; then
   pass "Pod created"
+  # Extract workspace name from output
+  WORKSPACE=$(echo "$UP_OUTPUT" | grep -oP 'Workspace\s+\K\S+' | head -1)
+  if [ -z "$WORKSPACE" ]; then
+    # Try to get the last created workspace
+    WORKSPACE=$(devpod list 2>/dev/null | tail -1 | awk '{print $1}')
+  fi
+  echo "Workspace name: $WORKSPACE"
 else
+  echo "$UP_OUTPUT"
   fail "Pod creation failed"
   echo -e "\n${RED}Cannot continue without a running pod${NC}"
   exit 1
@@ -41,15 +49,12 @@ fi
 echo ""
 echo "--- Running checks inside pod ---"
 CHECKS=$(devpod ssh "$WORKSPACE" -- bash -s << 'CHECKSCRIPT'
-ERRORS=0
-
 # Docker
 if [ -S /var/run/docker.sock ]; then
   if docker info >/dev/null 2>&1; then
     echo "PASS:Docker socket accessible"
   else
     echo "FAIL:Docker socket exists but daemon not reachable"
-    ERRORS=$((ERRORS + 1))
   fi
 else
   echo "WARN:Docker socket not mounted"
@@ -60,7 +65,6 @@ if [ -d ~/.gnupg ] && [ -d ~/.gnupg/private-keys-v1.d ]; then
   echo "PASS:GPG home directory exists with private keys"
 else
   echo "FAIL:GPG home directory missing or no private keys imported"
-  ERRORS=$((ERRORS + 1))
 fi
 
 SUBKEY=$(gpg --list-secret-subkeys --keyid-format long 2>/dev/null | grep "ssb" | head -1 | awk '{print $2}')
@@ -74,7 +78,6 @@ if gpgconf --list-components 2>/dev/null | grep -q gpg-agent; then
   echo "PASS:GPG agent available"
 else
   echo "FAIL:GPG agent not found"
-  ERRORS=$((ERRORS + 1))
 fi
 
 # Git
@@ -82,7 +85,6 @@ if git config --global commit.gpgsign 2>/dev/null | grep -q true; then
   echo "PASS:Git commit signing enabled"
 else
   echo "FAIL:Git commit signing not enabled"
-  ERRORS=$((ERRORS + 1))
 fi
 
 SIGNING_KEY=$(git config --global user.signingkey 2>/dev/null)
@@ -90,7 +92,6 @@ if [ -n "$SIGNING_KEY" ]; then
   echo "PASS:Git signing key set: $SIGNING_KEY"
 else
   echo "FAIL:Git signing key not configured"
-  ERRORS=$((ERRORS + 1))
 fi
 
 EMAIL=$(git config --global user.email 2>/dev/null)
@@ -145,8 +146,6 @@ if command -v stow >/dev/null 2>&1; then
 else
   echo "WARN:stow not found"
 fi
-
-echo "DONE:$ERRORS"
 CHECKSCRIPT
 )
 
@@ -156,7 +155,6 @@ while IFS= read -r line; do
     PASS:*) pass "${line#PASS:}" ;;
     FAIL:*) fail "${line#FAIL:}" ;;
     WARN:*) warn "${line#WARN:}" ;;
-    DONE:*) TOTAL_ERRORS="${line#DONE:}" ;;
   esac
 done <<< "$CHECKS"
 
@@ -172,10 +170,10 @@ fi
 # 4. Summary
 echo ""
 echo "=== Summary ==="
-if [ "${TOTAL_ERRORS:-1}" -eq 0 ]; then
+if [ "$ERRORS" -eq 0 ]; then
   echo -e "${GREEN}All checks passed!${NC}"
 else
-  echo -e "${RED}${TOTAL_ERRORS} error(s) found${NC}"
+  echo -e "${RED}$ERRORS error(s) found${NC}"
 fi
 
-exit "${TOTAL_ERRORS:-1}"
+exit "$ERRORS"
