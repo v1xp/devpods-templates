@@ -46,8 +46,7 @@ git config --global commit.gpgsign true
 # Wait for GPG agent to be ready and detect signing key
 SIGNING_KEY=""
 for i in 1 2 3 4 5; do
-  # Try subkey first (ssb), then primary key (sec)
-  SIGNING_KEY=$(gpg --list-secret-keys --keyid-format long 2>/dev/null | grep -E "^(sec|ssb)" | tail -1 | awk '{print $2}' | cut -d'/' -f2 || true)
+  SIGNING_KEY=$(gpg --list-secret-keys --keyid-format long 2>/dev/null | grep -E "^(sec|ssb)" | tail -1 | awk '{print $2}' | cut -d'/' -f2) || true
   if [ -n "$SIGNING_KEY" ]; then
     break
   fi
