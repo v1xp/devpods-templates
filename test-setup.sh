@@ -72,7 +72,7 @@ if [ -S /var/run/docker.sock ]; then
   if docker info >/dev/null 2>&1; then
     echo "PASS:Docker socket accessible"
   else
-    echo "FAIL:Docker socket exists but daemon not reachable"
+    echo "WARN:Docker socket exists but daemon not reachable (expected for knowledge pod)"
   fi
 else
   echo "WARN:Docker socket not mounted"

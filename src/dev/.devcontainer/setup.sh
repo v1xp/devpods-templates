@@ -39,3 +39,13 @@ if [ -f /tmp/devpod-keys/env.sh ]; then
     git config --global user.name "$GIT_USER_NAME"
   fi
 fi
+
+# 6. Git signing config (after GPG import)
+git config --global commit.gpgsign true
+SIGNING_KEY=$(gpg --list-secret-subkeys --keyid-format long 2>/dev/null | grep "^\s*ssb" | head -1 | awk '{print $2}' | cut -d'/' -f2 || true)
+if [ -z "$SIGNING_KEY" ]; then
+  SIGNING_KEY=$(gpg --list-secret-keys --keyid-format long 2>/dev/null | grep "^sec" | head -1 | awk '{print $2}' | cut -d'/' -f2 || true)
+fi
+if [ -n "$SIGNING_KEY" ]; then
+  git config --global user.signingkey "$SIGNING_KEY"
+fi
